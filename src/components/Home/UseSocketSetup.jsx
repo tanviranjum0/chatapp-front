@@ -15,7 +15,11 @@ const UseSocketSetup = (setFriendList, setMessages) => {
     socket.on("dm", async (msg) => {
       await setMessages((prev) => [msg, ...prev]);
     });
+    socket.on("connect", () => {
+      console.log("Socket Connected")
+    })
     socket.on("connected", (status, name) => {
+      console.log("Connected Socket")
       setFriendList((c) => {
         if (Array.isArray(c) && c?.length > 0) {
           return [...c].map((friend) => {
@@ -27,7 +31,15 @@ const UseSocketSetup = (setFriendList, setMessages) => {
         }
       });
     });
-    socket.on("connect_error", () => {
+    socket.on("disconnect", (reason, details) => {
+      console.log("Socket Disconnected", reason, details)
+    })
+    socket.on("error", (error) => {
+      console.log("Error", error)
+    })
+    socket.on("connect_error", (error) => {
+      console.log("Socket Error", error)
+
       setUser({ loggedIn: false });
       return () => {
         socket.off("connect_error");
